@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>王斩的斩 - 自制版</title>
+    <style>
+        body{
+            background:#111827;
+            color:white;
+            font-family:Arial;
+            text-align:center;
+            padding:30px;
+        }
+        .lyrics{
+            height:300px;
+            overflow-y:auto;
+            margin:20px auto;
+            width:90%;
+            line-height:2;
+            text-align:left;
+            padding:15px;
+            background:#1f2937;
+            border-radius:10px;
+        }
+        button{
+            padding:12px 24px;
+            font-size:16px;
+            background:#007bff;
+            color:white;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+        }
+        #progress{
+            width:90%;
+            margin:15px 0;
+        }
+        .active{
+            color:#00ff88;
+            font-weight:bold;
+            font-size:17px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>王斩的斩</h2>
+
+<!-- 直接用网络音频，必播放！ -->
+<audio id="audio" src="王斩的斩.mpeg"></audio>
+
+<button id="playBtn">▶ 播放</button>
+<input type="range" id="progress" min="0" max="100" value="0">
+
+<div class="lyrics" id="lyrics">
+    <p data-time="0">王斩的斩</p>
+    <p data-time="5">凌厉的刀锋出寒冬，我静听着老人敲石钟。</p>
+    <p data-time="8">那传说中的不老松，在迎着雪来的风。</p>
+    <p data-time="12">远处的高楼太繁华，无数的人群都往上爬。</p>
+    <p data-time="15">贪婪自私的步伐，想磨干净自己的爪牙。</p>
+    <p data-time="19">争斗后的半边天，还弥漫着刺骨的硝烟。</p>
+    <p data-time="23">有人在后面踮脚尖，看前方身影敢当先。</p>
+    <p data-time="27">饿瘦的老虎爬出洞，看树上的积雪千斤重。</p>
+    <p data-time="31">在扑食后的烈齿痛，总好过一场黄粱梦。</p>
+    <p data-time="34">寒冬的花儿飘向北，让跋涉的悍匪停下腿。</p>
+    <p data-time="38">膨胀的火药炸壁垒，把复杂的人心都炸毁。</p>
+    <p data-time="41">暴雪的后面必有光，像我一个猎人扛起枪。</p>
+    <p data-time="45">我胸膛硬得响当当，嘈杂的世俗就得硬刚。</p>
+    <p data-time="49">将所有懦弱放一旁，你别怕前面的路太长。</p>
+    <p data-time="53">将你的子弹都上膛，这寒冬处会有虎狼。</p>
+    <p data-time="55">黑夜的篝火烧得旺，准备好迎接下一场仗。</p>
+    <p data-time="60">骨中的鲜血已发烫，去踹翻面前的路障。</p>
+    <p data-time="63">手中的钢刀都出鞘，把复杂的感情都扔掉。</p>
+    <p data-time="67">早已过时的集结号，不如炸药填满的火炮。</p>
+    <p data-time="71">大步的甩开脚下路，用头去撞破所有禁锢。</p>
+    <p data-time="74">拜托，你别倾诉，还得扛生活的杀戮。</p>
+    <p data-time="78">大雾附上后车窗，向四周弥漫着冰霜。</p>
+    <p data-time="81">我准备足够的伪装，才重新上路向远方。</p>
+    <p data-time="85">那寒冬处的旧行囊，深埋了我的少年狂。</p>
+    <p data-time="89">在北方土地的骄阳，还残存一缕的光芒。</p>
+
+</div>
+
+<script>
+const audio = document.getElementById("audio");
+const playBtn = document.getElementById("playBtn");
+const progress = document.getElementById("progress");
+const lines = document.querySelectorAll("#lyrics p");
+let last = null;
+
+// 按钮点击（必响）
+playBtn.onclick = async ()=>{
+    try{
+        if(audio.paused){
+            await audio.play();
+            playBtn.textContent = "⏸ 暂停";
+        }else{
+            audio.pause();
+            playBtn.textContent = "▶ 播放";
+        }
+    }catch(e){
+        alert("请允许浏览器播放声音！");
+    }
+};
+
+// 进度条
+audio.ontimeupdate = ()=>{
+    if(!audio.duration) return;
+    progress.value = (audio.currentTime/audio.duration)*100;
+
+    // 歌词高亮
+    let now = null;
+    lines.forEach(p=>{
+        let t = Number(p.dataset.time);
+        let next = p.nextElementSibling;
+        let nt = next ? Number(next.dataset.time) : 9999;
+        if(audio.currentTime >= t && audio.currentTime < nt) now = p;
+    });
+
+    if(now && now!==last){
+        last?.classList.remove("active");
+        now.classList.add("active");
+        last = now;
+        now.scrollIntoView({behavior:"smooth",block:"center"});
+    }
+};
+
+// 拖动进度条
+progress.oninput = ()=>{
+    audio.currentTime = (progress.value/100)*audio.duration;
+};
+</script>
+
+</body>
+</html>
